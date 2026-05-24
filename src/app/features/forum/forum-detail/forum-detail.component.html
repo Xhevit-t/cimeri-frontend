@@ -1,0 +1,51 @@
+<div class="page">
+  <button class="back" (click)="back()">{{ 'fd.back' | t }}</button>
+
+  @if (loading) {
+    <div class="empty">{{ 'dash.loading' | t }}</div>
+  } @else if (errorMessage && !post) {
+    <div class="error-banner">{{ errorMessage }}</div>
+  } @else if (post) {
+    <article class="post-card">
+      <div class="post-head">
+        <h1>{{ post.title }}</h1>
+        @if (post.category) { <span class="badge">{{ post.category }}</span> }
+      </div>
+      <div class="post-meta">
+        <span>👤 {{ post.authorName || 'User' }}</span>
+        <span>📅 {{ post.createdAt | date:'medium' }}</span>
+      </div>
+      <div class="post-content">{{ post.content }}</div>
+    </article>
+
+    <section class="replies">
+      <h2>{{ replies.length }} {{ replies.length === 1 ? ('fd.reply' | t) : ('fd.replies' | t) }}</h2>
+
+      @if (replies.length === 0) {
+        <div class="empty-small">{{ 'fd.noReplies' | t }}</div>
+      } @else {
+        @for (r of replies; track r.id) {
+          <div class="reply">
+            <div class="reply-head">
+              <strong>{{ r.authorName || 'User' }}</strong>
+              <span class="time">{{ r.createdAt | date:'medium' }}</span>
+            </div>
+            <p>{{ r.content }}</p>
+          </div>
+        }
+      }
+
+      @if (auth.isLoggedIn()) {
+        <div class="reply-form">
+          <h3>{{ 'fd.add' | t }}</h3>
+          <textarea [(ngModel)]="newReply" rows="3" [placeholder]="'fd.share' | t"></textarea>
+          <button class="btn-primary" (click)="submitReply()" [disabled]="posting || !newReply.trim()">
+            @if (posting) { {{ 'fd.posting' | t }} } @else { {{ 'fd.btnReply' | t }} }
+          </button>
+        </div>
+      } @else {
+        <div class="empty-small">{{ 'fd.loginToJoin' | t }}</div>
+      }
+    </section>
+  }
+</div>

@@ -1,0 +1,83 @@
+<div class="page">
+  <div class="hero">
+    <h1>{{ 'dash.welcome' | t }}, {{ firstName }} 👋</h1>
+    <p>{{ 'dash.subtitle' | t }}</p>
+  </div>
+
+  <section class="stats">
+    <div class="stat-card">
+      <div class="stat-icon roommates">👥</div>
+      <div>
+        <div class="stat-value">{{ roommates.length }}</div>
+        <div class="stat-label">{{ 'dash.stats.r' | t }}</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon properties">🏠</div>
+      <div>
+        <div class="stat-value">{{ properties.length }}</div>
+        <div class="stat-label">{{ 'dash.stats.p' | t }}</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon requests">📨</div>
+      <div>
+        <div class="stat-value">{{ incomingCount }}</div>
+        <div class="stat-label">{{ 'dash.stats.req' | t }}</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <h2>{{ 'dash.topMatches' | t }}</h2>
+      <a routerLink="/roommates" class="see-all">{{ 'dash.seeAll' | t }}</a>
+    </div>
+
+    @if (loading) {
+      <div class="empty">{{ 'dash.loading' | t }}</div>
+    } @else if (roommates.length === 0) {
+      <div class="empty">{{ 'dash.noMatches' | t }}</div>
+    } @else {
+      <div class="grid">
+        @for (r of roommates; track r.id) {
+          <a class="card" [routerLink]="['/roommate', r.userId]">
+            <div class="avatar">
+              {{ (r.firstName?.charAt(0) || '?') + (r.lastName?.charAt(0) || '') }}
+            </div>
+            <h3>{{ r.firstName }} {{ r.lastName }}</h3>
+            <p class="muted">{{ r.city }}</p>
+            <p class="budget">${{ r.budgetMin }} - ${{ r.budgetMax }}</p>
+            <span class="chip">{{ r.lifestyle }}</span>
+            @if (r.compatibilityScore !== undefined) {
+              <div class="score">{{ r.compatibilityScore }}{{ 'dash.match' | t }}</div>
+            }
+          </a>
+        }
+      </div>
+    }
+  </section>
+
+  <section class="block">
+    <div class="block-head">
+      <h2>{{ 'dash.props' | t }}</h2>
+      <a routerLink="/properties" class="see-all">{{ 'dash.seeAll' | t }}</a>
+    </div>
+
+    @if (properties.length === 0 && !loading) {
+      <div class="empty">{{ 'dash.noProps' | t }}</div>
+    } @else {
+      <div class="grid">
+        @for (p of properties; track p.id) {
+          <a class="card property-card" [routerLink]="['/property', p.id]">
+            <div class="property-img">🏡</div>
+            <h3>{{ p.title }}</h3>
+            <p class="muted">{{ p.city }} · {{ p.rooms }} {{ 'dash.rooms' | t }}</p>
+            <p class="price">${{ p.price }}{{ 'pl.month' | t }}</p>
+            <span class="chip">{{ p.type }}</span>
+          </a>
+        }
+      </div>
+    }
+  </section>
+</div>

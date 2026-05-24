@@ -1,0 +1,71 @@
+<div class="page">
+  <button class="back" (click)="back()">{{ 'pd.back' | t }}</button>
+
+  @if (loading) {
+    <div class="empty">{{ 'pd.loading' | t }}</div>
+  } @else if (errorMessage && !property) {
+    <div class="error-banner">{{ errorMessage }}</div>
+  } @else if (property) {
+    <div class="card">
+      <div class="hero-img">🏡</div>
+
+      <div class="content">
+        <div class="title-row">
+          <div>
+            <h1>{{ property.title }}</h1>
+            <p class="muted">📍 {{ property.address }}, {{ property.city }}</p>
+          </div>
+          <div class="price">${{ property.price }}<span>{{ 'pd.month' | t }}</span></div>
+        </div>
+
+        @if (isOwner) {
+          <div class="owner-actions">
+            <a class="btn-secondary" [routerLink]="['/property/edit', property.id]">{{ 'pd.edit' | t }}</a>
+            <button class="btn-danger" (click)="delete()">{{ 'pd.delete' | t }}</button>
+          </div>
+        }
+
+        <div class="grid">
+          <div class="info-card">
+            <span class="label">{{ 'pd.type' | t }}</span>
+            <span class="value">{{ property.type }}</span>
+          </div>
+          <div class="info-card">
+            <span class="label">{{ 'pd.rooms' | t }}</span>
+            <span class="value">{{ property.rooms }}</span>
+          </div>
+          <div class="info-card">
+            <span class="label">{{ 'pd.bath' | t }}</span>
+            <span class="value">{{ property.bathrooms }}</span>
+          </div>
+          <div class="info-card">
+            <span class="label">{{ 'pd.from' | t }}</span>
+            <span class="value">{{ property.availableFrom }}</span>
+          </div>
+        </div>
+
+        <section class="section">
+          <h3>{{ 'pd.amenities' | t }}</h3>
+          <div class="chips">
+            <span class="chip" [class.on]="property.furnished">🛋 {{ 'pl.furnished' | t }}</span>
+            <span class="chip" [class.on]="property.wifi">📶 {{ 'pl.wifi' | t }}</span>
+            <span class="chip" [class.on]="property.parking">🚗 {{ 'pl.parking' | t }}</span>
+            <span class="chip" [class.on]="property.petFriendly">🐾 {{ 'pl.pet' | t }}</span>
+          </div>
+        </section>
+
+        <section class="section">
+          <h3>{{ 'pd.desc' | t }}</h3>
+          <p>{{ property.description }}</p>
+        </section>
+
+        @if (property.ownerName) {
+          <section class="section">
+            <h3>{{ 'pd.listedBy' | t }}</h3>
+            <p>{{ property.ownerName }}</p>
+          </section>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,58 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>{{ 'reg.title' | t }}</h1>
+    <p class="subtitle">{{ 'reg.subtitle' | t }}</p>
+
+    @if (errorMessage) {
+      <div class="error-banner">{{ errorMessage }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="row-2">
+        <div class="field">
+          <label for="firstName">{{ 'reg.firstName' | t }}</label>
+          <input id="firstName" type="text" formControlName="firstName"/>
+          @if (hasError('firstName', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+          @if (hasError('firstName', 'minlength')) { <small class="error">{{ 'reg.short' | t }}</small> }
+        </div>
+
+        <div class="field">
+          <label for="lastName">{{ 'reg.lastName' | t }}</label>
+          <input id="lastName" type="text" formControlName="lastName"/>
+          @if (hasError('lastName', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+          @if (hasError('lastName', 'minlength')) { <small class="error">{{ 'reg.short' | t }}</small> }
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">{{ 'reg.email' | t }}</label>
+        <input id="email" type="email" formControlName="email" placeholder="you@example.com"/>
+        @if (hasError('email', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+        @if (hasError('email', 'email')) { <small class="error">{{ 'reg.invalid' | t }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="password">{{ 'reg.password' | t }}</label>
+        <input id="password" type="password" formControlName="password" [placeholder]="'reg.pwHint' | t"/>
+        @if (hasError('password', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+        @if (hasError('password', 'minlength')) { <small class="error">{{ 'reg.pwHint' | t }}</small> }
+      </div>
+
+      <div class="field">
+        <label for="confirmPassword">{{ 'reg.confirm' | t }}</label>
+        <input id="confirmPassword" type="password" formControlName="confirmPassword" [placeholder]="'reg.repeat' | t"/>
+        @if (hasError('confirmPassword', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+        @if (passwordsDoNotMatch) { <small class="error">{{ 'reg.mismatch' | t }}</small> }
+      </div>
+
+      <button class="btn-primary" type="submit" [disabled]="loading">
+        @if (loading) { {{ 'reg.creating' | t }} } @else { {{ 'reg.submit' | t }} }
+      </button>
+
+      <p class="alt">
+        {{ 'reg.hasAcc' | t }}
+        <a routerLink="/login">{{ 'reg.signin' | t }}</a>
+      </p>
+    </form>
+  </div>
+</div>

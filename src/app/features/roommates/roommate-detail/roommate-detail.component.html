@@ -1,0 +1,77 @@
+<div class="page">
+  <button class="back" (click)="back()">{{ 'rmd.back' | t }}</button>
+
+  @if (loading) {
+    <div class="empty">{{ 'dash.loading' | t }}</div>
+  } @else if (errorMessage && !profile) {
+    <div class="error-banner">{{ errorMessage }}</div>
+  } @else if (profile) {
+    <div class="card">
+      <div class="hero">
+        <div class="avatar">{{ initials }}</div>
+        <div class="info">
+          <h1>{{ profile.firstName }} {{ profile.lastName }}</h1>
+          <p class="muted">📍 {{ profile.city }}</p>
+          @if (compatibility !== undefined) {
+            <div class="score">{{ compatibility }}{{ 'rmd.compat' | t }}</div>
+          }
+        </div>
+        <button class="btn-primary" (click)="showRequestForm = !showRequestForm">
+          {{ showRequestForm ? ('rmd.cancel' | t) : ('rmd.send' | t) }}
+        </button>
+      </div>
+
+      @if (successMessage) {
+        <div class="success-banner">{{ 'rmd.sent' | t }}</div>
+      }
+
+      @if (showRequestForm) {
+        <div class="request-form">
+          <h3>{{ 'rmd.sendTitle' | t }}</h3>
+          <textarea
+            [(ngModel)]="message"
+            rows="4"
+            [placeholder]="'rmd.intro' | t"
+            maxlength="500"></textarea>
+          <button class="btn-primary" (click)="sendRequest()" [disabled]="sending || !message.trim()">
+            @if (sending) { {{ 'rmd.sending' | t }} } @else { {{ 'rmd.sendBtn' | t }} }
+          </button>
+          @if (errorMessage) { <p class="error">{{ errorMessage }}</p> }
+        </div>
+      }
+
+      <div class="grid">
+        <div class="info-card">
+          <span class="label">{{ 'rmd.budget' | t }}</span>
+          <span class="value">${{ profile.budgetMin }} - ${{ profile.budgetMax }}</span>
+        </div>
+        <div class="info-card">
+          <span class="label">{{ 'rmd.housing' | t }}</span>
+          <span class="value">{{ profile.housingType }}</span>
+        </div>
+        <div class="info-card">
+          <span class="label">{{ 'rmd.lifestyle' | t }}</span>
+          <span class="value">{{ profile.lifestyle }}</span>
+        </div>
+        <div class="info-card">
+          <span class="label">{{ 'rmd.moving' | t }}</span>
+          <span class="value">{{ profile.movingDate }}</span>
+        </div>
+      </div>
+
+      <section class="section">
+        <h3>{{ 'rmd.habits' | t }}</h3>
+        <div class="chips">
+          <span class="chip" [class.on]="profile.earlyRiser">{{ 'rmd.early' | t }}</span>
+          <span class="chip" [class.on]="profile.cleanliness">{{ 'rmd.clean' | t }}</span>
+          <span class="chip" [class.on]="profile.studyAtHome">{{ 'rmd.studies' | t }}</span>
+        </div>
+      </section>
+
+      <section class="section">
+        <h3>{{ 'rmd.about' | t }}</h3>
+        <p>{{ profile.bio || ('rmd.noBioFull' | t) }}</p>
+      </section>
+    </div>
+  }
+</div>

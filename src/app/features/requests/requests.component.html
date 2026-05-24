@@ -1,0 +1,122 @@
+<div class="page">
+  <header class="head">
+    <h1>{{ 'rq.title' | t }}</h1>
+    <p>{{ 'rq.subtitle' | t }}</p>
+  </header>
+
+  @if (errorMessage) {
+    <div class="error-banner">{{ errorMessage }}</div>
+  }
+
+  <div class="tabs">
+    <button
+      class="tab"
+      [class.active]="activeTab === 'incoming'"
+      (click)="setTab('incoming')">
+      {{ 'rq.incoming' | t }} ({{ incoming.length }})
+    </button>
+    <button
+      class="tab"
+      [class.active]="activeTab === 'outgoing'"
+      (click)="setTab('outgoing')">
+      {{ 'rq.outgoing' | t }} ({{ outgoing.length }})
+    </button>
+  </div>
+
+  @if (loading) {
+    <div class="empty">{{ 'rq.loading' | t }}</div>
+  } @else if (activeTab === 'incoming') {
+    @if (incoming.length === 0) {
+      <div class="empty">
+        <h3>{{ 'rq.noIn' | t }}</h3>
+        <p>{{ 'rq.noInDesc' | t }}</p>
+      </div>
+    } @else {
+      <div class="list">
+        @for (r of incoming; track r.id) {
+          <div class="card">
+            <div class="card-head">
+              <strong>{{ r.senderName || 'User #' + r.senderId }}</strong>
+              <span class="status" [class]="r.status.toLowerCase()">
+                @switch (r.status) {
+                  @case ('PENDING') { {{ 'rq.pending' | t }} }
+                  @case ('ACCEPTED') { {{ 'rq.accepted' | t }} }
+                  @case ('REJECTED') { {{ 'rq.rejected' | t }} }
+                }
+              </span>
+            </div>
+            <p class="message">"{{ r.message }}"</p>
+            <p class="time">{{ r.createdAt | date:'medium' }}</p>
+
+            @if (r.status === 'ACCEPTED' && contactInfoMap[r.id]) {
+              <div class="contact-info">
+                <h4>{{ 'rq.contact' | t }}</h4>
+                <p>📧 {{ contactInfoMap[r.id].email }}</p>
+                @if (contactInfoMap[r.id].phoneNumber) {
+                  <p>📞 {{ contactInfoMap[r.id].phoneNumber }}</p>
+                }
+              </div>
+            }
+
+            @if (r.status === 'PENDING') {
+              <div class="actions">
+                <button class="btn-primary" (click)="accept(r)">{{ 'rq.accept' | t }}</button>
+                <button class="btn-secondary" (click)="reject(r)">{{ 'rq.reject' | t }}</button>
+              </div>
+            } @else {
+              <div class="actions">
+                @if (r.status === 'ACCEPTED' && !contactInfoMap[r.id]) {
+                  <button class="btn-secondary" (click)="fetchContactInfo(r.id)">{{ 'rq.show' | t }}</button>
+                }
+                <button class="btn-danger" (click)="delete(r)">{{ 'rq.delete' | t }}</button>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    }
+  } @else {
+    @if (outgoing.length === 0) {
+      <div class="empty">
+        <h3>{{ 'rq.noOut' | t }}</h3>
+        <p>{{ 'rq.noOutDesc' | t }}</p>
+      </div>
+    } @else {
+      <div class="list">
+        @for (r of outgoing; track r.id) {
+          <div class="card">
+            <div class="card-head">
+              <strong>{{ 'rq.to' | t }} {{ r.recipientName || 'User #' + r.recipientId }}</strong>
+              <span class="status" [class]="r.status.toLowerCase()">
+                @switch (r.status) {
+                  @case ('PENDING') { {{ 'rq.pending' | t }} }
+                  @case ('ACCEPTED') { {{ 'rq.accepted' | t }} }
+                  @case ('REJECTED') { {{ 'rq.rejected' | t }} }
+                }
+              </span>
+            </div>
+            <p class="message">"{{ r.message }}"</p>
+            <p class="time">{{ r.createdAt | date:'medium' }}</p>
+
+            @if (r.status === 'ACCEPTED' && contactInfoMap[r.id]) {
+              <div class="contact-info">
+                <h4>{{ 'rq.contact' | t }}</h4>
+                <p>📧 {{ contactInfoMap[r.id].email }}</p>
+                @if (contactInfoMap[r.id].phoneNumber) {
+                  <p>📞 {{ contactInfoMap[r.id].phoneNumber }}</p>
+                }
+              </div>
+            }
+
+            <div class="actions">
+              @if (r.status === 'ACCEPTED' && !contactInfoMap[r.id]) {
+                <button class="btn-secondary" (click)="fetchContactInfo(r.id)">{{ 'rq.show' | t }}</button>
+              }
+              <button class="btn-danger" (click)="delete(r)">{{ 'rq.delete' | t }}</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>

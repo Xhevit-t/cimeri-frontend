@@ -1,0 +1,29 @@
+<nav class="navbar">
+  <div class="nav-container">
+    <a class="brand" routerLink="/" (click)="closeMenu()">
+      <img class="brand-logo" src="assets/logo.png" alt="FlatBuddy"/>
+      <span class="brand-text">FlatBuddy</span>
+    </a>
+
+    <button class="menu-toggle" (click)="toggleMenu()" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+
+    <ul class="nav-links" [class.open]="menuOpen">
+      @if (auth.isLoggedIn()) {
+        <li><a routerLink="/dashboard" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.dashboard' | t }}</a></li>
+        <li><a routerLink="/roommates" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.roommates' | t }}</a></li>
+        <li><a routerLink="/properties" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.properties' | t }}</a></li>
+        <li><a routerLink="/forum" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.forum' | t }}</a></li>
+        <li><a routerLink="/requests" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.requests' | t }}</a></li>
+        <li><a routerLink="/profile" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.profile' | t }}</a></li>
+        <li><button class="btn-logout" (click)="logout()">{{ 'nav.logout' | t }}</button></li>
+      } @else {
+        <li><a routerLink="/forum" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.forum' | t }}</a></li>
+        <li><a routerLink="/login" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.login' | t }}</a></li>
+        <li><a class="btn-primary" routerLink="/register" (click)="closeMenu()">{{ 'nav.signup' | t }}</a></li>
+      }
+      <li class="lang-slot"><app-lang-switcher></app-lang-switcher></li>
+    </ul>
+  </div>
+</nav>

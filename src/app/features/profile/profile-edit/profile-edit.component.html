@@ -1,0 +1,95 @@
+<div class="page">
+  <div class="card">
+    <h1>{{ isCreate ? ('pe.titleCreate' | t) : ('pe.titleEdit' | t) }}</h1>
+    <p class="subtitle">{{ 'pe.subtitle' | t }}</p>
+
+    @if (errorMessage) {
+      <div class="error-banner">{{ errorMessage }}</div>
+    }
+
+    @if (loading) {
+      <div class="empty">{{ 'dash.loading' | t }}</div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="row">
+          <div class="field">
+            <label for="city">{{ 'pe.city' | t }}</label>
+            <select id="city" formControlName="city">
+              <option value="">{{ 'pe.selectCity' | t }}</option>
+              @for (c of cities; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            @if (hasError('city', 'required')) { <small class="error">{{ 'pe.required' | t }}</small> }
+          </div>
+
+          <div class="field">
+            <label for="movingDate">{{ 'pe.moving' | t }}</label>
+            <input id="movingDate" type="date" formControlName="movingDate"/>
+            @if (hasError('movingDate', 'required')) { <small class="error">{{ 'pe.required' | t }}</small> }
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="budgetMin">{{ 'pe.budgetMin' | t }}</label>
+            <input id="budgetMin" type="number" formControlName="budgetMin" min="0"/>
+          </div>
+
+          <div class="field">
+            <label for="budgetMax">{{ 'pe.budgetMax' | t }}</label>
+            <input id="budgetMax" type="number" formControlName="budgetMax" min="0"/>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="housingType">{{ 'pe.housing' | t }}</label>
+            <select id="housingType" formControlName="housingType">
+              @for (t of housingTypes; track t) {
+                <option [value]="t">{{ t }}</option>
+              }
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="lifestyle">{{ 'pe.lifestyle' | t }}</label>
+            <select id="lifestyle" formControlName="lifestyle">
+              @for (l of lifestyles; track l) {
+                <option [value]="l">{{ l }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <fieldset class="habits">
+          <legend>{{ 'pe.habits' | t }}</legend>
+          <label class="check">
+            <input type="checkbox" formControlName="earlyRiser"/>
+            {{ 'pe.early' | t }}
+          </label>
+          <label class="check">
+            <input type="checkbox" formControlName="cleanliness"/>
+            {{ 'pe.clean' | t }}
+          </label>
+          <label class="check">
+            <input type="checkbox" formControlName="studyAtHome"/>
+            {{ 'pe.studies' | t }}
+          </label>
+        </fieldset>
+
+        <div class="field">
+          <label for="bio">{{ 'pe.bio' | t }}</label>
+          <textarea id="bio" formControlName="bio" rows="4" maxlength="500" [placeholder]="'pe.bioPh' | t"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="cancel()">{{ 'pe.cancel' | t }}</button>
+          <button type="submit" class="btn-primary" [disabled]="saving">
+            @if (saving) { {{ 'pe.saving' | t }} } @else { {{ 'pe.save' | t }} }
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>

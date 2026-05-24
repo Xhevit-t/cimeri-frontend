@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Set-Location 'C:\\\\'; Get-ChildItem 'C:\\\\Users\\\\PC\\\\Desktop\\\\cimeri-frontend\\\\cimeri-frontend\\\\cimeri-webapp' -Force | ForEach-Object { Move-Item -Path $_.FullName -Destination 'C:\\\\Users\\\\PC\\\\Desktop\\\\cimeri-frontend\\\\' -Force }; Write-Output \"Move done.\"; Remove-Item 'C:\\\\Users\\\\PC\\\\Desktop\\\\cimeri-frontend\\\\cimeri-frontend' -Recurse -Force; Write-Output \"Cleanup done.\")"
+    ]
+  }
+}

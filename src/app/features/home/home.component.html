@@ -1,0 +1,88 @@
+<div class="hero-wrap">
+  <section class="hero">
+    <div class="hero-text">
+      <div class="hero-chip">
+        <span class="chip-dot"></span>
+        {{ 'home.chip' | t }}
+      </div>
+      <h1>
+        <span class="line">{{ 'home.title' | t }}</span>
+        <span class="line accent">{{ 'home.title2' | t }}</span>
+      </h1>
+      <p>{{ 'home.subtitle' | t }}</p>
+    </div>
+
+    <div class="hero-art">
+      <div class="card-stack">
+        <div class="hero-card a">
+          <span class="emoji">🏠</span>
+          <span class="label">{{ 'home.card1' | t }}</span>
+        </div>
+        <div class="hero-card b">
+          <span class="emoji">👥</span>
+          <span class="label">{{ 'home.card2' | t }}</span>
+        </div>
+        <div class="hero-card c">
+          <span class="emoji">💬</span>
+          <span class="label">{{ 'home.card3' | t }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cta">
+      @if (auth.isLoggedIn()) {
+        <a class="btn-primary" routerLink="/dashboard">
+          <span>{{ 'home.cta.dash' | t }}</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="btn-link" routerLink="/roommates">{{ 'home.cta.browse' | t }}</a>
+      } @else {
+        <a class="btn-primary" routerLink="/register">
+          <span>{{ 'home.cta.start' | t }}</span>
+          <span class="arrow">→</span>
+        </a>
+        <a class="btn-link" routerLink="/login">{{ 'home.cta.signin' | t }}</a>
+      }
+    </div>
+
+    <a class="scroll-cue" href="#features" aria-label="Scroll to features">
+      <span class="chev"></span>
+    </a>
+  </section>
+</div>
+
+<section id="features" class="features">
+  <h2>{{ 'home.features' | t }}</h2>
+  <div class="grid">
+    <div class="feature">
+      <div class="icon">🎯</div>
+      <h3>{{ 'home.f1.title' | t }}</h3>
+      <p>{{ 'home.f1.desc' | t }}</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🏘️</div>
+      <h3>{{ 'home.f2.title' | t }}</h3>
+      <p>{{ 'home.f2.desc' | t }}</p>
+    </div>
+    <div class="feature">
+      <div class="icon">🔒</div>
+      <h3>{{ 'home.f3.title' | t }}</h3>
+      <p>{{ 'home.f3.desc' | t }}</p>
+    </div>
+    <div class="feature">
+      <div class="icon">💬</div>
+      <h3>{{ 'home.f4.title' | t }}</h3>
+      <p>{{ 'home.f4.desc' | t }}</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <h2>{{ 'home.cta.ready' | t }}</h2>
+  <p>{{ 'home.cta.minute' | t }}</p>
+  @if (!auth.isLoggedIn()) {
+    <a class="btn-primary" routerLink="/register">{{ 'home.cta.create' | t }}</a>
+  } @else {
+    <a class="btn-primary" routerLink="/profile/edit/new">{{ 'home.cta.compl' | t }}</a>
+  }
+</section>

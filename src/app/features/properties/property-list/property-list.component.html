@@ -1,0 +1,55 @@
+<div class="page">
+  <header class="head">
+    <div>
+      <h1>{{ 'pl.title' | t }}</h1>
+      <p>{{ 'pl.subtitle' | t }}</p>
+    </div>
+    <a class="btn-primary" routerLink="/property/new">{{ 'pl.list' | t }}</a>
+  </header>
+
+  <div class="filters">
+    <input type="text" [placeholder]="'pl.city' | t" [(ngModel)]="searchCity" (ngModelChange)="applyFilters()"/>
+    <select [(ngModel)]="filterType" (ngModelChange)="applyFilters()">
+      <option value="">{{ 'pl.allTypes' | t }}</option>
+      @for (t of types; track t) {
+        <option [value]="t">{{ t }}</option>
+      }
+    </select>
+    <input type="number" [placeholder]="'pl.maxPrice' | t" [(ngModel)]="filterMaxPrice" (ngModelChange)="applyFilters()"/>
+    <input type="number" [placeholder]="'pl.minRooms' | t" [(ngModel)]="filterRooms" (ngModelChange)="applyFilters()"/>
+    <button class="btn-clear" (click)="clear()">{{ 'pl.reset' | t }}</button>
+  </div>
+
+  @if (loading) {
+    <div class="empty">{{ 'pl.loading' | t }}</div>
+  } @else if (filtered.length === 0) {
+    <div class="empty">
+      <h3>{{ 'pl.notFound' | t }}</h3>
+      <p>{{ 'pl.adjust' | t }}</p>
+    </div>
+  } @else {
+    <div class="grid">
+      @for (p of filtered; track p.id) {
+        <a class="card" [routerLink]="['/property', p.id]">
+          <div class="img">🏡</div>
+          <div class="body">
+            <h3>{{ p.title }}</h3>
+            <p class="muted">📍 {{ p.city }}</p>
+            <p class="price">${{ p.price }}{{ 'pl.month' | t }}</p>
+            <div class="meta">
+              <span>🛏 {{ p.rooms }} {{ 'pl.rooms' | t }}</span>
+              <span>🚿 {{ p.bathrooms }} {{ 'pl.bath' | t }}</span>
+            </div>
+            <div class="chips">
+              <span class="chip">{{ p.type }}</span>
+              @if (p.furnished) { <span class="chip">{{ 'pl.furnished' | t }}</span> }
+              @if (p.wifi) { <span class="chip">{{ 'pl.wifi' | t }}</span> }
+              @if (p.parking) { <span class="chip">{{ 'pl.parking' | t }}</span> }
+              @if (p.petFriendly) { <span class="chip">{{ 'pl.pet' | t }}</span> }
+            </div>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</div>

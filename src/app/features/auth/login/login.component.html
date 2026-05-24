@@ -1,0 +1,51 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <h1>{{ 'login.title' | t }}</h1>
+    <p class="subtitle">{{ 'login.subtitle' | t }}</p>
+
+    @if (errorMessage) {
+      <div class="error-banner">{{ errorMessage }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <div class="field">
+        <label for="email">{{ 'login.email' | t }}</label>
+        <input id="email" type="email" formControlName="email" placeholder="you@example.com" autocomplete="email"/>
+        @if (hasError('email', 'required')) {
+          <small class="error">{{ 'login.req' | t }}</small>
+        }
+        @if (hasError('email', 'email')) {
+          <small class="error">{{ 'login.invalidEmail' | t }}</small>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">{{ 'login.password' | t }}</label>
+        <input id="password" type="password" formControlName="password" placeholder="••••••••" autocomplete="current-password"/>
+        @if (hasError('password', 'required')) {
+          <small class="error">{{ 'login.req' | t }}</small>
+        }
+        @if (hasError('password', 'minlength')) {
+          <small class="error">{{ 'login.shortPw' | t }}</small>
+        }
+      </div>
+
+      <div class="row">
+        <label class="check">
+          <input type="checkbox" formControlName="rememberMe"/>
+          {{ 'login.remember' | t }}
+        </label>
+        <a class="link" href="#">{{ 'login.forgot' | t }}</a>
+      </div>
+
+      <button class="btn-primary" type="submit" [disabled]="loading">
+        @if (loading) { {{ 'login.signing' | t }} } @else { {{ 'login.submit' | t }} }
+      </button>
+
+      <p class="alt">
+        {{ 'login.noAcc' | t }}
+        <a routerLink="/register">{{ 'login.create' | t }}</a>
+      </p>
+    </form>
+  </div>
+</div>

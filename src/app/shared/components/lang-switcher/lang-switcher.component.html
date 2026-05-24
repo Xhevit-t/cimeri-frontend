@@ -1,0 +1,22 @@
+<div class="lang-switcher">
+  <button class="trigger" (click)="toggle()" aria-haspopup="true" [attr.aria-expanded]="open">
+    <span class="flag">{{ currentLang.flag }}</span>
+    <span class="code">{{ currentLang.code.toUpperCase() }}</span>
+    <span class="arrow" [class.up]="open">▾</span>
+  </button>
+
+  @if (open) {
+    <div class="menu" role="menu">
+      @for (l of langs; track l.code) {
+        <button
+          class="item"
+          [class.active]="l.code === i18n.current()"
+          (click)="select(l.code)"
+          role="menuitem">
+          <span class="flag">{{ l.flag }}</span>
+          <span>{{ l.label }}</span>
+        </button>
+      }
+    </div>
+  }
+</div>

@@ -1,0 +1,107 @@
+import { Component, inject, Input, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
+import { PropertyService } from '../../../core/services/property.service';
+import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
+
+@Component({
+  selector: 'app-property-form',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, TranslatePipe],
+  templateUrl: './property-form.component.html',
+  styleUrl: './property-form.component.css'
+})
+export class PropertyFormComponent implements OnInit {
+  private fb = inject(FormBuilder);
+  private propertySvc = inject(PropertyService);
+  private router = inject(Router);
+
+  @Input() id?: string;
+
+  isCreate = false;
+  loading = false;
+  saving = false;
+  errorMessage = '';
+
+  cities = ['Skopje', 'Bitola', 'Tetovo', 'Kumanovo', 'Prilep', 'Ohrid', 'Stip', 'Veles'];
+  types = ['APARTMENT', 'HOUSE', 'STUDIO', 'ROOM'];
+
+  form = this.fb.nonNullable.group({
+    title: ['', [Validators.required, Validators.minLength(5)]],
+    description: ['', [Validators.required, Validators.minLength(10)]],
+    city: ['', Validators.required],
+    address: ['', Validators.required],
+    price: [300, [Validators.required, Validators.min(0)]],
+    type: ['APARTMENT', Validators.required],
+    rooms: [1, [Validators.required, Validators.min(1)]],
+    bathrooms: [1, [Validators.required, Validators.min(1)]],
+    furnished: [false],
+    wifi: [true],
+    parking: [false],
+    petFriendly: [false],
+    availableFrom: ['', Validators.required]
+  });
+
+  ngOnInit(): void {
+    this.isCreate = !this.id || this.id === 'new';
+    if (this.isCreate) return;
+
+    this.loading = true;
+    this.propertySvc.getProperty(Number(this.id)).subscribe({
+      next: (p) => {
+        this.form.patchValue({
+          title: p.title,
+          description: p.description,
+          city: p.city,
+          address: p.address,
+          price: p.price,
+          type: p.type,
+          rooms: p.rooms,
+          bathrooms: p.bathrooms,
+          furnished: p.furnished,
+          wifi: p.wifi,
+          parking: p.parking,
+          petFriendly: p.petFriendly,
+          availableFrom: p.availableFrom
+        });
+        this.loading = false;
+      },
+      error: () => (this.loading = false)
+    });
+  }
+
+  submit(): void {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
+    this.saving = true;
+    this.errorMessage = '';
+    const data: any = this.form.getRawValue();
+
+    const obs = this.isCreate
+      ? this.propertySvc.createProperty(data)
+      : this.propertySvc.updateProperty(Number(this.id), data);
+
+    obs.subscribe({
+      next: (p) => {
+        this.saving = false;
+        this.router.navigate(['/property', p.id]);
+      },
+      error: (err) => {
+        this.saving = false;
+        this.errorMessage = err?.displayMessage || 'Save failed';
+      }
+    });
+  }
+
+  cancel(): void {
+    this.router.navigate(['/properties']);
+  }
+
+  hasError(field: string, error: string): boolean {
+    const c = this.form.get(field);
+    return !!(c && c.touched && c.hasError(error));
+  }
+}

@@ -1,0 +1,68 @@
+<div class="page">
+  @if (loading) {
+    <div class="empty">{{ 'pv.loading' | t }}</div>
+  } @else if (errorMessage) {
+    <div class="error-banner">{{ errorMessage }}</div>
+  } @else if (!hasProfile) {
+    <div class="empty-card">
+      <h2>{{ 'pv.complete' | t }}</h2>
+      <p>{{ 'pv.completeDesc' | t }}</p>
+      <a class="btn-primary" routerLink="/profile/edit/new">{{ 'pv.create' | t }}</a>
+    </div>
+  } @else if (profile) {
+    <div class="card">
+      <header class="card-header">
+        <div class="avatar">{{ initials }}</div>
+        <div>
+          <h1>{{ profile.firstName }} {{ profile.lastName }}</h1>
+          <p class="muted">{{ profile.email }}</p>
+        </div>
+        <div class="actions">
+          <a class="btn-secondary" [routerLink]="['/profile/edit', profile.id]">{{ 'pv.edit' | t }}</a>
+          <button class="btn-danger" (click)="delete()">{{ 'pv.delete' | t }}</button>
+        </div>
+      </header>
+
+      <div class="grid">
+        <div class="info">
+          <span class="label">{{ 'pv.city' | t }}</span>
+          <span class="value">{{ profile.city }}</span>
+        </div>
+        <div class="info">
+          <span class="label">{{ 'pv.budget' | t }}</span>
+          <span class="value">${{ profile.budgetMin }} - ${{ profile.budgetMax }}</span>
+        </div>
+        <div class="info">
+          <span class="label">{{ 'pv.housing' | t }}</span>
+          <span class="value">{{ profile.housingType }}</span>
+        </div>
+        <div class="info">
+          <span class="label">{{ 'pv.lifestyle' | t }}</span>
+          <span class="value">{{ profile.lifestyle }}</span>
+        </div>
+        <div class="info">
+          <span class="label">{{ 'pv.moving' | t }}</span>
+          <span class="value">{{ profile.movingDate }}</span>
+        </div>
+        <div class="info">
+          <span class="label">{{ 'pv.status' | t }}</span>
+          <span class="value">{{ profile.isLooking ? ('pv.looking' | t) : ('pv.notLooking' | t) }}</span>
+        </div>
+      </div>
+
+      <section class="habits">
+        <h3>{{ 'pv.habits' | t }}</h3>
+        <div class="chips">
+          <span class="chip" [class.on]="profile.earlyRiser">{{ 'rmd.early' | t }}</span>
+          <span class="chip" [class.on]="profile.cleanliness">{{ 'rmd.clean' | t }}</span>
+          <span class="chip" [class.on]="profile.studyAtHome">{{ 'rmd.studies' | t }}</span>
+        </div>
+      </section>
+
+      <section class="bio">
+        <h3>{{ 'pv.about' | t }}</h3>
+        <p>{{ profile.bio || ('pv.noBio' | t) }}</p>
+      </section>
+    </div>
+  }
+</div>

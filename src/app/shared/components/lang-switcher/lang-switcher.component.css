@@ -1,0 +1,80 @@
+.lang-switcher {
+  position: relative;
+}
+
+.trigger {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #374151;
+  transition: all 0.15s;
+}
+
+.trigger:hover {
+  background: #f3f4f6;
+  border-color: #c7d2fe;
+}
+
+.flag {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.code {
+  font-weight: 600;
+}
+
+.arrow {
+  font-size: 0.7rem;
+  color: #9ca3af;
+  transition: transform 0.15s;
+}
+
+.arrow.up {
+  transform: rotate(180deg);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: 0.35rem;
+  min-width: 150px;
+  z-index: 200;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  background: transparent;
+  border: none;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  color: #374151;
+  cursor: pointer;
+  text-align: left;
+}
+
+.item:hover {
+  background: #f3f4f6;
+}
+
+.item.active {
+  background: #ede9fe;
+  color: #5b21b6;
+  font-weight: 600;
+}

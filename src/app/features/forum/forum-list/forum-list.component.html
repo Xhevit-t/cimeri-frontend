@@ -1,0 +1,72 @@
+<div class="page">
+  <header class="head">
+    <div>
+      <h1>{{ 'fl.title' | t }}</h1>
+      <p>{{ 'fl.subtitle' | t }}</p>
+    </div>
+    @if (auth.isLoggedIn()) {
+      <button class="btn-primary" (click)="showForm = !showForm">
+        {{ showForm ? ('fl.cancel' | t) : ('fl.newPost' | t) }}
+      </button>
+    }
+  </header>
+
+  @if (showForm && auth.isLoggedIn()) {
+    <div class="form-card">
+      <h3>{{ 'fl.startDisc' | t }}</h3>
+      @if (errorMessage) { <div class="error-banner">{{ errorMessage }}</div> }
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="field">
+          <label for="title">{{ 'fl.fTitle' | t }}</label>
+          <input id="title" type="text" formControlName="title" [placeholder]="'fl.fTopic' | t"/>
+          @if (hasError('title', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+          @if (hasError('title', 'minlength')) { <small class="error">{{ 'reg.short' | t }}</small> }
+        </div>
+        <div class="field">
+          <label for="content">{{ 'fl.fContent' | t }}</label>
+          <textarea id="content" formControlName="content" rows="4" [placeholder]="'fl.fThoughts' | t"></textarea>
+          @if (hasError('content', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+          @if (hasError('content', 'minlength')) { <small class="error">{{ 'reg.short' | t }}</small> }
+        </div>
+        <div class="field">
+          <label for="category">{{ 'fl.fCategory' | t }}</label>
+          <select id="category" formControlName="category">
+            <option value="General">{{ 'fl.cGeneral' | t }}</option>
+            <option value="Tips">{{ 'fl.cTips' | t }}</option>
+            <option value="Questions">{{ 'fl.cQuestions' | t }}</option>
+            <option value="Reviews">{{ 'fl.cReviews' | t }}</option>
+          </select>
+        </div>
+        <button class="btn-primary" type="submit" [disabled]="posting">
+          @if (posting) { {{ 'fl.posting' | t }} } @else { {{ 'fl.post' | t }} }
+        </button>
+      </form>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="empty">{{ 'fl.loading' | t }}</div>
+  } @else if (posts.length === 0) {
+    <div class="empty">
+      <h3>{{ 'fl.empty' | t }}</h3>
+      <p>{{ 'fl.beFirst' | t }}</p>
+    </div>
+  } @else {
+    <div class="posts">
+      @for (p of posts; track p.id) {
+        <a class="post" [routerLink]="['/forum', p.id]">
+          <div class="post-head">
+            <h3>{{ p.title }}</h3>
+            @if (p.category) { <span class="badge">{{ p.category }}</span> }
+          </div>
+          <p class="excerpt">{{ p.content }}</p>
+          <div class="post-meta">
+            <span>👤 {{ p.authorName || 'User' }}</span>
+            <span>📅 {{ p.createdAt | date:'mediumDate' }}</span>
+            <span>💬 {{ p.replyCount ?? 0 }} {{ 'fl.replies' | t }}</span>
+          </div>
+        </a>
+      }
+    </div>
+  }
+</div>

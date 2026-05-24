@@ -1,0 +1,97 @@
+<div class="page">
+  <div class="card">
+    <h1>{{ isCreate ? ('pf.titleCreate' | t) : ('pf.titleEdit' | t) }}</h1>
+    <p class="subtitle">{{ 'pf.subtitle' | t }}</p>
+
+    @if (errorMessage) {
+      <div class="error-banner">{{ errorMessage }}</div>
+    }
+
+    @if (loading) {
+      <div class="empty">{{ 'dash.loading' | t }}</div>
+    } @else {
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+        <div class="field">
+          <label for="title">{{ 'pf.fTitle' | t }}</label>
+          <input id="title" type="text" formControlName="title" [placeholder]="'pf.fTitlePh' | t"/>
+          @if (hasError('title', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+          @if (hasError('title', 'minlength')) { <small class="error">{{ 'reg.short' | t }}</small> }
+        </div>
+
+        <div class="field">
+          <label for="description">{{ 'pf.fDesc' | t }}</label>
+          <textarea id="description" formControlName="description" rows="4" [placeholder]="'pf.fDescPh' | t"></textarea>
+          @if (hasError('description', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+          @if (hasError('description', 'minlength')) { <small class="error">{{ 'reg.short' | t }}</small> }
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="city">{{ 'pf.fCity' | t }}</label>
+            <select id="city" formControlName="city">
+              <option value="">{{ 'pf.fSelect' | t }}</option>
+              @for (c of cities; track c) {
+                <option [value]="c">{{ c }}</option>
+              }
+            </select>
+            @if (hasError('city', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+          </div>
+
+          <div class="field">
+            <label for="address">{{ 'pf.fAddress' | t }}</label>
+            <input id="address" type="text" formControlName="address" [placeholder]="'pf.fAddressPh' | t"/>
+            @if (hasError('address', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="price">{{ 'pf.fPrice' | t }}</label>
+            <input id="price" type="number" formControlName="price" min="0"/>
+            @if (hasError('price', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+          </div>
+
+          <div class="field">
+            <label for="type">{{ 'pf.fType' | t }}</label>
+            <select id="type" formControlName="type">
+              @for (t of types; track t) {
+                <option [value]="t">{{ t }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="rooms">{{ 'pf.fRooms' | t }}</label>
+            <input id="rooms" type="number" formControlName="rooms" min="1"/>
+          </div>
+          <div class="field">
+            <label for="bathrooms">{{ 'pf.fBath' | t }}</label>
+            <input id="bathrooms" type="number" formControlName="bathrooms" min="1"/>
+          </div>
+          <div class="field">
+            <label for="availableFrom">{{ 'pf.fAvail' | t }}</label>
+            <input id="availableFrom" type="date" formControlName="availableFrom"/>
+            @if (hasError('availableFrom', 'required')) { <small class="error">{{ 'login.req' | t }}</small> }
+          </div>
+        </div>
+
+        <fieldset class="amenities">
+          <legend>{{ 'pf.fAmenities' | t }}</legend>
+          <label class="check"><input type="checkbox" formControlName="furnished"/> {{ 'pf.fFurnished' | t }}</label>
+          <label class="check"><input type="checkbox" formControlName="wifi"/> {{ 'pf.fWifi' | t }}</label>
+          <label class="check"><input type="checkbox" formControlName="parking"/> {{ 'pf.fParking' | t }}</label>
+          <label class="check"><input type="checkbox" formControlName="petFriendly"/> {{ 'pf.fPet' | t }}</label>
+        </fieldset>
+
+        <div class="form-actions">
+          <button type="button" class="btn-secondary" (click)="cancel()">{{ 'pf.cancel' | t }}</button>
+          <button type="submit" class="btn-primary" [disabled]="saving">
+            @if (saving) { {{ 'pf.saving' | t }} } @else { {{ 'pf.save' | t }} }
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>
