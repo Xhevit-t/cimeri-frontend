@@ -24,7 +24,14 @@ export class PropertyFormComponent implements OnInit {
   saving = false;
   errorMessage = '';
 
-  cities = ['Skopje', 'Bitola', 'Tetovo', 'Kumanovo', 'Prilep', 'Ohrid', 'Stip', 'Veles'];
+  // All cities of North Macedonia (Latin, diacritic-free), alphabetical.
+  cities = [
+    'Berovo', 'Bitola', 'Bogdanci', 'Debar', 'Delcevo', 'Demir Hisar', 'Demir Kapija',
+    'Gevgelija', 'Gostivar', 'Kavadarci', 'Kicevo', 'Kocani', 'Kratovo', 'Kriva Palanka',
+    'Krusevo', 'Kumanovo', 'Makedonska Kamenica', 'Makedonski Brod', 'Negotino', 'Ohrid',
+    'Pehcevo', 'Prilep', 'Probistip', 'Radovis', 'Resen', 'Skopje', 'Struga', 'Strumica',
+    'Sveti Nikole', 'Tetovo', 'Valandovo', 'Veles', 'Vinica', 'Stip'
+  ];
   // Backend accommodation enum — 'HOUSE'/'ROOM' don't exist server-side and
   // would be silently coerced, so only the real values are offered here.
   types = ['APARTMENT', 'PRIVATE_ROOM', 'STUDIO'];

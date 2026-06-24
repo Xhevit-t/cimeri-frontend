@@ -8,8 +8,15 @@ export interface ContactRequest {
   senderId: number;
   senderName?: string;
   senderEmail?: string;
+  /** Backend field names for the recipient. */
+  receiverId?: number;
+  receiverName?: string;
   recipientId: number;
   recipientName?: string;
+  /** Contact details revealed once a request is accepted. */
+  contactEmail?: string;
+  contactPhone?: string;
+  contactSocialLink?: string;
   /**
    * Backend field names. The contact-request DTO is shared with reports, so the
    * sender of an inbox item may arrive as reporterId/reporterName instead of
@@ -28,14 +35,17 @@ export interface ContactRequest {
 }
 
 export interface ContactRequestCreate {
-  targetType: ContactTargetType;
-  targetId: number;
+  /** Backend field: the user the request is sent to (required). */
+  receiverId: number;
+  /** Backend field: the message body. */
+  message?: string;
+
+  /** Legacy aliases kept so older call sites still compile. */
+  targetType?: ContactTargetType;
+  targetId?: number;
+  recipientId?: number;
   reason?: string;
   description?: string;
-
-  /** Legacy fields used by existing components */
-  recipientId?: number;
-  message?: string;
 }
 
 export interface ContactInfo {

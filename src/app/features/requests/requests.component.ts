@@ -125,7 +125,9 @@ export class RequestsComponent implements OnInit, OnDestroy {
   }
 
   getRecipientName(req: ContactRequest): string {
-    return req.recipientName ?? `User #${req.recipientId ?? req.targetId ?? '?'}`;
+    return req.receiverName
+      ?? req.recipientName
+      ?? `User #${req.receiverId ?? req.recipientId ?? req.targetId ?? '?'}`;
   }
 
   /** Collapse the backend's APPROVED (shared report DTO) onto ACCEPTED for display. */

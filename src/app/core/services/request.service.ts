@@ -31,12 +31,12 @@ export class RequestService {
    * Legacy method: sendRequest({ recipientId, message }) used by RoommateDetailComponent.
    * Maps to POST /contact-requests.
    */
-  sendRequest(payload: { recipientId?: number; targetId?: number; targetType?: string; reason?: string; description?: string; message?: string }): Observable<ContactRequest> {
+  sendRequest(payload: { receiverId?: number; recipientId?: number; targetId?: number; targetType?: string; reason?: string; description?: string; message?: string }): Observable<ContactRequest> {
+    // The backend expects { receiverId, message }. Accept the various legacy
+    // field names call sites use and normalize them.
     const mapped: ContactRequestCreate = {
-      targetType: (payload.targetType as 'USER' | 'PROPERTY') ?? 'USER',
-      targetId: payload.targetId ?? payload.recipientId ?? 0,
-      reason: payload.reason,
-      description: payload.description ?? payload.message
+      receiverId: payload.receiverId ?? payload.targetId ?? payload.recipientId ?? 0,
+      message: payload.message ?? payload.description ?? payload.reason
     };
     return this.api.createContactRequest(mapped);
   }

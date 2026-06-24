@@ -65,9 +65,8 @@ export class RoommateDetailComponent implements OnInit, OnDestroy {
     this.errorMessage = '';
     // POST /contact-requests via RequestService.sendRequest()
     this.requests.sendRequest({
-      targetType: 'USER',
-      targetId: this.profile.userId,
-      description: this.message
+      receiverId: this.profile.userId,
+      message: this.message
     }).pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
