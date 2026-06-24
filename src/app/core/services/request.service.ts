@@ -78,21 +78,18 @@ export class RequestService {
 
   /**
    * GET /contact-requests/counts
-   * The backend returns a status→count map (e.g. { "PENDING": 3, "ACCEPTED": 1 }).
-   * Normalize it to the RequestCounts shape, tolerating any key casing and
-   * treating APPROVED as ACCEPTED (the contact-request DTO is shared with reports).
+   * The backend returns { pendingInbox, pendingOutbox }. The dashboard badge
+   * tracks incoming requests awaiting my response → pendingInbox. Fallbacks keep
+   * it working if the shape changes.
    */
   getCounts(): Observable<RequestCounts> {
     return this.api.getContactRequestCounts().pipe(
       map((raw) => {
-        const lookup: Record<string, number> = {};
-        for (const [key, value] of Object.entries(raw ?? {})) {
-          lookup[key.toUpperCase()] = Number(value) || 0;
-        }
+        const r = (raw ?? {}) as Record<string, number>;
         return {
-          pending: lookup['PENDING'] ?? 0,
-          accepted: (lookup['ACCEPTED'] ?? 0) + (lookup['APPROVED'] ?? 0),
-          rejected: lookup['REJECTED'] ?? 0
+          pending: r['pendingInbox'] ?? r['PENDING'] ?? r['pending'] ?? 0,
+          accepted: r['accepted'] ?? r['ACCEPTED'] ?? 0,
+          rejected: r['rejected'] ?? r['REJECTED'] ?? 0
         };
       })
     );

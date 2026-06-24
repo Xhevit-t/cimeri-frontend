@@ -28,7 +28,7 @@ export class ForumListComponent implements OnInit {
   form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.minLength(5)]],
     content: ['', [Validators.required, Validators.minLength(10)]],
-    category: ['General']
+    category: ['GENERAL']
   });
 
   ngOnInit(): void {
@@ -59,7 +59,7 @@ export class ForumListComponent implements OnInit {
     this.forum.createPost(this.form.getRawValue()).subscribe({
       next: () => {
         this.posting = false;
-        this.form.reset({ title: '', content: '', category: 'General' });
+        this.form.reset({ title: '', content: '', category: 'GENERAL' });
         this.showForm = false;
         this.load();
       },
