@@ -29,6 +29,17 @@ export const routes: Routes = [
       import('./features/properties/property-list/property-list.component').then((m) => m.PropertyListComponent),
     title: 'Properties · FlatBuddy'
   },
+  // NOTE: 'property/new' MUST be declared before 'property/:id'. Angular matches
+  // routes top-to-bottom (first match wins), so a ':id' route placed first would
+  // swallow '/property/new' (treating "new" as the id) and load the detail page —
+  // which then fetches /properties/NaN and 500s — instead of the create form.
+  {
+    path: 'property/new',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./features/properties/property-form/property-form.component').then((m) => m.PropertyFormComponent),
+    title: 'List property · FlatBuddy'
+  },
   {
     path: 'property/:id',
     loadComponent: () =>
@@ -83,13 +94,6 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/roommates/roommate-detail/roommate-detail.component').then((m) => m.RoommateDetailComponent),
     title: 'Roommate · FlatBuddy'
-  },
-  {
-    path: 'property/new',
-    canActivate: [authGuard],
-    loadComponent: () =>
-      import('./features/properties/property-form/property-form.component').then((m) => m.PropertyFormComponent),
-    title: 'List property · FlatBuddy'
   },
   {
     path: 'property/edit/:id',
