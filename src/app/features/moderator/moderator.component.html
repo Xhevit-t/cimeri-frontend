@@ -1,0 +1,80 @@
+<div class="page">
+  <header class="head">
+    <h1>Moderation Panel</h1>
+    <a routerLink="/dashboard" class="btn-secondary">Back to Dashboard</a>
+  </header>
+
+  @if (actionMessage) {
+    <div class="info-banner">{{ actionMessage }}</div>
+  }
+  @if (errorMessage) {
+    <div class="error-banner">{{ errorMessage }}</div>
+  }
+
+  <div class="filters">
+    <label>Filter by status:</label>
+    <select [(ngModel)]="filterStatus" (ngModelChange)="onFilterChange()">
+      <option value="">All</option>
+      <option value="PENDING">Pending</option>
+      <option value="APPROVED">Approved</option>
+      <option value="REJECTED">Rejected</option>
+    </select>
+  </div>
+
+  @if (loading) {
+    <div class="empty">Loading reports...</div>
+  } @else if (reports.length === 0) {
+    <div class="empty">No reports found.</div>
+  } @else {
+    <div class="list">
+      @for (r of reports; track r.id) {
+        <div class="card" [class.pending]="r.status === 'PENDING'">
+          <div class="card-head">
+            <div>
+              <strong>Report #{{ r.id }}</strong>
+              <span class="badge">{{ r.targetType }}</span>
+              <span class="badge id-badge">Target ID: {{ r.targetId }}</span>
+            </div>
+            <span class="status" [class]="r.status?.toLowerCase()">{{ r.status }}</span>
+          </div>
+          <p><strong>Reason:</strong> {{ r.reason }}</p>
+          @if (r.description) {
+            <p class="muted">{{ r.description }}</p>
+          }
+          @if (r.moderatorNotes) {
+            <p class="notes"><strong>Notes:</strong> {{ r.moderatorNotes }}</p>
+          }
+          <p class="time">Reported: {{ r.createdAt | date:'medium' }}</p>
+
+          @if (r.status === 'PENDING') {
+            <div class="actions">
+              <input
+                type="text"
+                [(ngModel)]="moderatorNotes"
+                placeholder="Optional moderator notes..."
+                class="notes-input"/>
+              <button
+                class="btn-primary"
+                (click)="approve(r)"
+                [disabled]="processingId === r.id">
+                Approve
+              </button>
+              <button
+                class="btn-danger"
+                (click)="reject(r)"
+                [disabled]="processingId === r.id">
+                Reject
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <div class="pagination">
+      <button class="btn-secondary" (click)="prevPage()" [disabled]="page === 0">Previous</button>
+      <span>Page {{ page + 1 }} of {{ totalPages }}</span>
+      <button class="btn-secondary" (click)="nextPage()" [disabled]="page >= totalPages - 1">Next</button>
+    </div>
+  }
+</div>

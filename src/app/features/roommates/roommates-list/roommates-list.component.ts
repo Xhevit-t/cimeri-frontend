@@ -1,7 +1,9 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { MatchingService } from '../../../core/services/matching.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { Profile } from '../../../shared/models/profile.model';
@@ -14,13 +16,15 @@ import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
   templateUrl: './roommates-list.component.html',
   styleUrl: './roommates-list.component.css'
 })
-export class RoommatesListComponent implements OnInit {
+export class RoommatesListComponent implements OnInit, OnDestroy {
   private matching = inject(MatchingService);
   private auth = inject(AuthService);
+  private destroy$ = new Subject<void>();
 
   roommates: Profile[] = [];
   filtered: Profile[] = [];
   loading = true;
+  errorMessage = '';
 
   searchCity = '';
   filterLifestyle = '';
@@ -34,18 +38,27 @@ export class RoommatesListComponent implements OnInit {
       this.loading = false;
       return;
     }
-    this.matching.getRoommateMatches(user.id).subscribe({
-      next: (data) => {
-        this.roommates = data ?? [];
-        this.filtered = [...this.roommates];
-        this.loading = false;
-      },
-      error: () => {
-        this.roommates = [];
-        this.filtered = [];
-        this.loading = false;
-      }
-    });
+    // Use GET /profiles/recommendations via MatchingService
+    this.matching.getRoommateMatches(user.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.roommates = data ?? [];
+          this.filtered = [...this.roommates];
+          this.loading = false;
+        },
+        error: (err) => {
+          this.errorMessage = err?.displayMessage || 'Could not load roommate recommendations';
+          this.roommates = [];
+          this.filtered = [];
+          this.loading = false;
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   applyFilters(): void {
@@ -56,7 +69,8 @@ export class RoommatesListComponent implements OnInit {
       if (this.filterLifestyle && r.lifestyle !== this.filterLifestyle) {
         return false;
       }
-      if (this.filterMaxBudget && r.budgetMax > this.filterMaxBudget) {
+      const maxBudget = r.maxBudget ?? r.budgetMax ?? Infinity;
+      if (this.filterMaxBudget && maxBudget > this.filterMaxBudget) {
         return false;
       }
       return true;

@@ -17,8 +17,15 @@
         <li><a routerLink="/forum" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.forum' | t }}</a></li>
         <li><a routerLink="/requests" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.requests' | t }}</a></li>
         <li><a routerLink="/profile" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.profile' | t }}</a></li>
+        @if (isModerator) {
+          <li><a routerLink="/moderator" routerLinkActive="active" (click)="closeMenu()">Moderation</a></li>
+        }
+        @if (isAdmin) {
+          <li><a routerLink="/admin" routerLinkActive="active" (click)="closeMenu()">Admin</a></li>
+        }
         <li><button class="btn-logout" (click)="logout()">{{ 'nav.logout' | t }}</button></li>
       } @else {
+        <li><a routerLink="/properties" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.properties' | t }}</a></li>
         <li><a routerLink="/forum" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.forum' | t }}</a></li>
         <li><a routerLink="/login" routerLinkActive="active" (click)="closeMenu()">{{ 'nav.login' | t }}</a></li>
         <li><a class="btn-primary" routerLink="/register" (click)="closeMenu()">{{ 'nav.signup' | t }}</a></li>

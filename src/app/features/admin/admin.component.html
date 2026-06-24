@@ -1,0 +1,87 @@
+<div class="page">
+  <header class="head">
+    <h1>Admin Panel</h1>
+    <a routerLink="/dashboard" class="btn-secondary">Back to Dashboard</a>
+  </header>
+
+  @if (actionMessage) {
+    <div class="info-banner">{{ actionMessage }}</div>
+  }
+
+  <!-- Stats -->
+  <section class="block">
+    <h2>Platform Statistics</h2>
+    @if (statsLoading) {
+      <div class="empty">Loading stats...</div>
+    } @else if (statsError) {
+      <div class="error-banner">{{ statsError }}</div>
+    } @else if (stats) {
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-value">{{ stats.totalUsers }}</div><div class="stat-label">Total Users</div></div>
+        <div class="stat-card"><div class="stat-value">{{ stats.activeUsers }}</div><div class="stat-label">Active Users</div></div>
+        <div class="stat-card"><div class="stat-value">{{ stats.blockedUsers }}</div><div class="stat-label">Blocked Users</div></div>
+        <div class="stat-card"><div class="stat-value">{{ stats.totalProperties }}</div><div class="stat-label">Properties</div></div>
+        <div class="stat-card"><div class="stat-value">{{ stats.totalPosts }}</div><div class="stat-label">Forum Posts</div></div>
+        <div class="stat-card"><div class="stat-value">{{ stats.pendingReports }}</div><div class="stat-label">Pending Reports</div></div>
+        <div class="stat-card"><div class="stat-value">{{ stats.totalContactRequests }}</div><div class="stat-label">Contact Requests</div></div>
+        <div class="stat-card"><div class="stat-value">{{ stats.acceptedContactRequests }}</div><div class="stat-label">Accepted Requests</div></div>
+      </div>
+    }
+  </section>
+
+  <!-- User Management -->
+  <section class="block">
+    <h2>User Management</h2>
+    @if (usersLoading) {
+      <div class="empty">Loading users...</div>
+    } @else if (usersError) {
+      <div class="error-banner">{{ usersError }}</div>
+    } @else {
+      <table class="users-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (u of users; track u.id) {
+            <tr [class.blocked-row]="u.blocked">
+              <td>{{ u.id }}</td>
+              <td>{{ u.firstName }} {{ u.lastName }}</td>
+              <td>{{ u.email }}</td>
+              <td>{{ (u.roles || []).join(', ') }}</td>
+              <td>
+                <span class="status" [class.blocked]="u.blocked">
+                  {{ u.blocked ? 'Blocked' : 'Active' }}
+                </span>
+              </td>
+              <td>
+                @if (u.blocked) {
+                  <button class="btn-primary btn-sm" (click)="unblockUser(u)">Unblock</button>
+                } @else {
+                  <button class="btn-danger btn-sm" (click)="blockUser(u)">Block</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <div class="pagination">
+        <button class="btn-secondary" (click)="prevPage()" [disabled]="page === 0">Previous</button>
+        <span>Page {{ page + 1 }} of {{ totalPages }}</span>
+        <button class="btn-secondary" (click)="nextPage()" [disabled]="page >= totalPages - 1">Next</button>
+      </div>
+    }
+  </section>
+
+  <section class="block">
+    <h2>Moderation</h2>
+    <a routerLink="/moderator" class="btn-secondary">Go to Moderation Panel</a>
+  </section>
+</div>

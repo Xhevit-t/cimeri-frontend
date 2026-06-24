@@ -6,6 +6,11 @@ import { AuthService } from '../../../core/services/auth.service';
 import { TranslatePipe } from '../../../shared/pipes/translate.pipe';
 import { TranslationService } from '../../../core/i18n/translation.service';
 
+/**
+ * Login form: email + password → POST /auth/login (via AuthService → ApiService).
+ * On success the JWT is stored in localStorage; authInterceptor attaches it
+ * to all later requests. On 401, shows an invalid-credentials message.
+ */
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -36,6 +41,7 @@ export class LoginComponent {
     this.loading = true;
     this.errorMessage = '';
     const { email, password } = this.form.getRawValue();
+
     this.auth.login({ email, password }).subscribe({
       next: () => {
         this.loading = false;
@@ -43,7 +49,11 @@ export class LoginComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err?.displayMessage || this.i18n.t('login.error');
+        if (err?.status === 401) {
+          this.errorMessage = this.i18n.t('login.error');
+        } else {
+          this.errorMessage = err?.displayMessage || this.i18n.t('login.error');
+        }
       }
     });
   }

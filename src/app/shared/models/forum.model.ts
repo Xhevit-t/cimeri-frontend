@@ -1,16 +1,19 @@
+export type ForumCategory = 'ADVICE' | 'EXPERIENCES' | 'QUESTIONS' | 'CITIES' | 'GENERAL';
+
 export interface ForumPost {
   id: number;
   authorId: number;
   authorName?: string;
   title: string;
   content: string;
-  category?: string;
+  category?: ForumCategory | string;
   createdAt: string;
   updatedAt?: string;
   replyCount?: number;
+  commentCount?: number;
 }
 
-export interface ForumReply {
+export interface ForumComment {
   id: number;
   postId: number;
   authorId: number;
@@ -19,10 +22,13 @@ export interface ForumReply {
   createdAt: string;
 }
 
+/** Legacy alias for existing components */
+export type ForumReply = ForumComment;
+
 export interface ForumPostCreate {
   title: string;
   content: string;
-  category?: string;
+  category?: ForumCategory | string;
 }
 
 export interface ForumReplyCreate {

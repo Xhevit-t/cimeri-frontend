@@ -1,7 +1,9 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { roleGuard } from './core/guards/role.guard';
 
 export const routes: Routes = [
+  // ─── Public ───────────────────────────────────────────────────────────────
   {
     path: '',
     loadComponent: () =>
@@ -20,6 +22,33 @@ export const routes: Routes = [
       import('./features/auth/register/register.component').then((m) => m.RegisterComponent),
     title: 'Sign up · FlatBuddy'
   },
+  // Properties and Forum are public (browsable without login)
+  {
+    path: 'properties',
+    loadComponent: () =>
+      import('./features/properties/property-list/property-list.component').then((m) => m.PropertyListComponent),
+    title: 'Properties · FlatBuddy'
+  },
+  {
+    path: 'property/:id',
+    loadComponent: () =>
+      import('./features/properties/property-detail/property-detail.component').then((m) => m.PropertyDetailComponent),
+    title: 'Property · FlatBuddy'
+  },
+  {
+    path: 'forum',
+    loadComponent: () =>
+      import('./features/forum/forum-list/forum-list.component').then((m) => m.ForumListComponent),
+    title: 'Forum · FlatBuddy'
+  },
+  {
+    path: 'forum/:id',
+    loadComponent: () =>
+      import('./features/forum/forum-detail/forum-detail.component').then((m) => m.ForumDetailComponent),
+    title: 'Discussion · FlatBuddy'
+  },
+
+  // ─── Authenticated ────────────────────────────────────────────────────────
   {
     path: 'dashboard',
     canActivate: [authGuard],
@@ -56,12 +85,6 @@ export const routes: Routes = [
     title: 'Roommate · FlatBuddy'
   },
   {
-    path: 'properties',
-    loadComponent: () =>
-      import('./features/properties/property-list/property-list.component').then((m) => m.PropertyListComponent),
-    title: 'Properties · FlatBuddy'
-  },
-  {
     path: 'property/new',
     canActivate: [authGuard],
     loadComponent: () =>
@@ -76,29 +99,30 @@ export const routes: Routes = [
     title: 'Edit property · FlatBuddy'
   },
   {
-    path: 'property/:id',
-    loadComponent: () =>
-      import('./features/properties/property-detail/property-detail.component').then((m) => m.PropertyDetailComponent),
-    title: 'Property · FlatBuddy'
-  },
-  {
-    path: 'forum',
-    loadComponent: () =>
-      import('./features/forum/forum-list/forum-list.component').then((m) => m.ForumListComponent),
-    title: 'Forum · FlatBuddy'
-  },
-  {
-    path: 'forum/:id',
-    loadComponent: () =>
-      import('./features/forum/forum-detail/forum-detail.component').then((m) => m.ForumDetailComponent),
-    title: 'Discussion · FlatBuddy'
-  },
-  {
     path: 'requests',
     canActivate: [authGuard],
     loadComponent: () =>
       import('./features/requests/requests.component').then((m) => m.RequestsComponent),
     title: 'Requests · FlatBuddy'
   },
+
+  // ─── Moderator / Admin ────────────────────────────────────────────────────
+  {
+    path: 'moderator',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['MODERATOR', 'ADMIN'] },
+    loadComponent: () =>
+      import('./features/moderator/moderator.component').then((m) => m.ModeratorComponent),
+    title: 'Moderation · FlatBuddy'
+  },
+  {
+    path: 'admin',
+    canActivate: [authGuard, roleGuard],
+    data: { roles: ['ADMIN'] },
+    loadComponent: () =>
+      import('./features/admin/admin.component').then((m) => m.AdminComponent),
+    title: 'Admin · FlatBuddy'
+  },
+
   { path: '**', redirectTo: '' }
 ];

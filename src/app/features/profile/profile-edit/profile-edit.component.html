@@ -24,28 +24,28 @@
           </div>
 
           <div class="field">
-            <label for="movingDate">{{ 'pe.moving' | t }}</label>
-            <input id="movingDate" type="date" formControlName="movingDate"/>
-            @if (hasError('movingDate', 'required')) { <small class="error">{{ 'pe.required' | t }}</small> }
+            <label for="moveInDate">{{ 'pe.moving' | t }}</label>
+            <input id="moveInDate" type="date" formControlName="moveInDate"/>
+            @if (hasError('moveInDate', 'required')) { <small class="error">{{ 'pe.required' | t }}</small> }
           </div>
         </div>
 
         <div class="row">
           <div class="field">
-            <label for="budgetMin">{{ 'pe.budgetMin' | t }}</label>
-            <input id="budgetMin" type="number" formControlName="budgetMin" min="0"/>
+            <label for="minBudget">{{ 'pe.budgetMin' | t }}</label>
+            <input id="minBudget" type="number" formControlName="minBudget" min="0"/>
           </div>
 
           <div class="field">
-            <label for="budgetMax">{{ 'pe.budgetMax' | t }}</label>
-            <input id="budgetMax" type="number" formControlName="budgetMax" min="0"/>
+            <label for="maxBudget">{{ 'pe.budgetMax' | t }}</label>
+            <input id="maxBudget" type="number" formControlName="maxBudget" min="0"/>
           </div>
         </div>
 
         <div class="row">
           <div class="field">
-            <label for="housingType">{{ 'pe.housing' | t }}</label>
-            <select id="housingType" formControlName="housingType">
+            <label for="accommodationType">{{ 'pe.housing' | t }}</label>
+            <select id="accommodationType" formControlName="accommodationType">
               @for (t of housingTypes; track t) {
                 <option [value]="t">{{ t }}</option>
               }
@@ -69,12 +69,20 @@
             {{ 'pe.early' | t }}
           </label>
           <label class="check">
-            <input type="checkbox" formControlName="cleanliness"/>
+            <input type="checkbox" formControlName="clean"/>
             {{ 'pe.clean' | t }}
           </label>
           <label class="check">
-            <input type="checkbox" formControlName="studyAtHome"/>
+            <input type="checkbox" formControlName="studiesAtHome"/>
             {{ 'pe.studies' | t }}
+          </label>
+          <label class="check">
+            <input type="checkbox" formControlName="smoker"/>
+            Smoker
+          </label>
+          <label class="check">
+            <input type="checkbox" formControlName="petFriendly"/>
+            Pet friendly
           </label>
         </fieldset>
 
@@ -82,6 +90,18 @@
           <label for="bio">{{ 'pe.bio' | t }}</label>
           <textarea id="bio" formControlName="bio" rows="4" maxlength="500" [placeholder]="'pe.bioPh' | t"></textarea>
         </div>
+
+        <fieldset class="habits">
+          <legend>Visibility</legend>
+          <label class="check">
+            <input type="checkbox" formControlName="publicProfile"/>
+            Public profile
+          </label>
+          <label class="check">
+            <input type="checkbox" formControlName="visibleInRecommendations"/>
+            Visible in recommendations
+          </label>
+        </fieldset>
 
         <div class="form-actions">
           <button type="button" class="btn-secondary" (click)="cancel()">{{ 'pe.cancel' | t }}</button>

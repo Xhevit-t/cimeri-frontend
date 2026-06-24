@@ -54,7 +54,13 @@ export class RegisterComponent {
       },
       error: (err) => {
         this.loading = false;
-        this.errorMessage = err?.displayMessage || this.i18n.t('reg.error');
+        if (err?.status === 401) {
+          this.errorMessage = this.i18n.t('login.error');
+        } else if (err?.status === 409) {
+          this.errorMessage = err?.displayMessage || 'An account with this email already exists.';
+        } else {
+          this.errorMessage = err?.displayMessage || this.i18n.t('reg.error');
+        }
       }
     });
   }

@@ -1,0 +1,9 @@
+{
+  "/api": {
+    "target": "https://team-project-flatbuddy-backend.onrender.com",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": { "^/api": "" },
+    "logLevel": "debug"
+  }
+}

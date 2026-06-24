@@ -1,10 +1,13 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../core/services/auth.service';
-import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { MatchingService } from '../../core/services/matching.service';
 import { RequestService } from '../../core/services/request.service';
+import { PropertyService } from '../../core/services/property.service';
+import { TranslatePipe } from '../../shared/pipes/translate.pipe';
 import { Profile } from '../../shared/models/profile.model';
 import { Property } from '../../shared/models/property.model';
 
@@ -15,46 +18,104 @@ import { Property } from '../../shared/models/property.model';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   private auth = inject(AuthService);
   private matching = inject(MatchingService);
   private requests = inject(RequestService);
+  private propertySvc = inject(PropertyService);
+
+  private destroy$ = new Subject<void>();
 
   roommates: Profile[] = [];
   properties: Property[] = [];
-  incomingCount = 0;
-  loading = true;
+  pendingRequestCount = 0;
+
+  roommatesLoading = true;
+  propertiesLoading = true;
+  requestsLoading = true;
+
+  roommatesError = '';
+  propertiesError = '';
+  requestsError = '';
 
   ngOnInit(): void {
     const user = this.auth.getCurrentUser();
     if (!user) {
-      this.loading = false;
+      this.roommatesLoading = false;
+      this.propertiesLoading = false;
+      this.requestsLoading = false;
       return;
     }
 
-    this.matching.getRoommateMatches(user.id).subscribe({
-      next: (data) => (this.roommates = data?.slice(0, 4) ?? []),
-      error: () => (this.roommates = [])
-    });
+    // Load recommended roommates
+    this.matching.getRoommateMatches(user.id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.roommates = (data ?? []).slice(0, 4);
+          this.roommatesLoading = false;
+        },
+        error: (err) => {
+          this.roommatesError = err?.displayMessage || 'Could not load roommates';
+          this.roommatesLoading = false;
+        }
+      });
 
-    this.matching.getPropertyMatches(user.id).subscribe({
-      next: (data) => (this.properties = data?.slice(0, 4) ?? []),
-      error: () => (this.properties = [])
-    });
+    // Load featured properties
+    this.propertySvc.getProperties({ size: 4 } as any)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (data) => {
+          this.properties = (data ?? []).slice(0, 4);
+          this.propertiesLoading = false;
+        },
+        error: (err) => {
+          this.propertiesError = err?.displayMessage || 'Could not load properties';
+          this.propertiesLoading = false;
+        }
+      });
 
-    this.requests.getIncoming().subscribe({
-      next: (data) => {
-        this.incomingCount = data?.filter((r) => r.status === 'PENDING').length ?? 0;
-        this.loading = false;
-      },
-      error: () => {
-        this.incomingCount = 0;
-        this.loading = false;
-      }
-    });
+    // Load pending request count
+    this.requests.getCounts()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (counts) => {
+          this.pendingRequestCount = counts?.pending ?? 0;
+          this.requestsLoading = false;
+        },
+        error: () => {
+          // Fall back to fetching inbox if counts endpoint fails
+          this.requests.getIncoming()
+            .pipe(takeUntil(this.destroy$))
+            .subscribe({
+              next: (data) => {
+                this.pendingRequestCount = (data ?? []).filter((r) => r.status === 'PENDING').length;
+                this.requestsLoading = false;
+              },
+              error: () => {
+                this.pendingRequestCount = 0;
+                this.requestsLoading = false;
+              }
+            });
+        }
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   get firstName(): string {
     return this.auth.getCurrentUser()?.firstName ?? 'there';
+  }
+
+  get isAdmin(): boolean {
+    return this.auth.getCurrentUser()?.roles?.includes('ADMIN') ?? false;
+  }
+
+  get isModerator(): boolean {
+    const roles = this.auth.getCurrentUser()?.roles ?? [];
+    return roles.includes('MODERATOR') || roles.includes('ADMIN');
   }
 }

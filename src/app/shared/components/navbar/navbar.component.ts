@@ -28,4 +28,13 @@ export class NavbarComponent {
     this.auth.logout();
     this.menuOpen = false;
   }
+
+  get isAdmin(): boolean {
+    return this.auth.getCurrentUser()?.roles?.includes('ADMIN') ?? false;
+  }
+
+  get isModerator(): boolean {
+    const roles = this.auth.getCurrentUser()?.roles ?? [];
+    return roles.includes('MODERATOR') || roles.includes('ADMIN');
+  }
 }
