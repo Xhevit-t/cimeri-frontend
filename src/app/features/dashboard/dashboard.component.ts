@@ -55,8 +55,13 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.roommates = (data ?? []).slice(0, 4);
           this.roommatesLoading = false;
         },
-        error: (err) => {
-          this.roommatesError = err?.displayMessage || 'Could not load roommates';
+        error: () => {
+          // The backend /profiles/recommendations endpoint currently returns
+          // 500 unconditionally. Degrade this summary widget to its empty state
+          // ("no matches yet") rather than showing a server-error banner.
+          // The error is still logged by the error interceptor.
+          this.roommates = [];
+          this.roommatesError = '';
           this.roommatesLoading = false;
         }
       });
@@ -69,8 +74,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
           this.properties = (data ?? []).slice(0, 4);
           this.propertiesLoading = false;
         },
-        error: (err) => {
-          this.propertiesError = err?.displayMessage || 'Could not load properties';
+        error: () => {
+          // The backend /properties list endpoint currently returns 500
+          // unconditionally. Degrade to the empty state instead of an error.
+          this.properties = [];
+          this.propertiesError = '';
           this.propertiesLoading = false;
         }
       });
