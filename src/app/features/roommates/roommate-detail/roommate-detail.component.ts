@@ -44,7 +44,7 @@ export class RoommateDetailComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (p) => {
-          this.profile = p;
+          this.profile = this.normalize(p);
           this.loading = false;
         },
         error: (err) => {
@@ -94,5 +94,32 @@ export class RoommateDetailComponent implements OnInit, OnDestroy {
   get isSelf(): boolean {
     const me = this.auth.getCurrentUser();
     return !!me && !!this.profile && me.id === this.profile.userId;
+  }
+
+  /** Translation keys for only the habits this roommate actually selected. */
+  get habits(): string[] {
+    const p = this.profile as any;
+    if (!p) return [];
+    const out: string[] = [];
+    if (p.earlyRiser) out.push('rmd.early');
+    if (p.clean ?? p.cleanliness) out.push('rmd.clean');
+    if (p.studiesAtHome ?? p.studyAtHome) out.push('rmd.studies');
+    if (p.smoker) out.push('rmd.smoker');
+    if (p.petFriendly) out.push('rmd.pet');
+    return out;
+  }
+
+  /** Map backend field names to the legacy aliases the template reads. */
+  private normalize(p: Profile): Profile {
+    return {
+      ...p,
+      budgetMin: p.budgetMin ?? p.minBudget,
+      budgetMax: p.budgetMax ?? p.maxBudget,
+      housingType: p.housingType ?? (p.accommodationType as any),
+      cleanliness: p.cleanliness ?? p.clean,
+      studyAtHome: p.studyAtHome ?? p.studiesAtHome,
+      movingDate: p.movingDate ?? p.moveInDate,
+      city: p.city ?? ''
+    };
   }
 }

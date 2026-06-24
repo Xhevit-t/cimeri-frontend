@@ -127,6 +127,9 @@ export const TRANSLATIONS: Dict = {
   'rmd.early':       { mk: '🌅 Рано станува',            en: '🌅 Early riser',             sq: '🌅 Ngrihet herët' },
   'rmd.clean':       { mk: '✨ Уредност',                en: '✨ Cleanliness',              sq: '✨ Pastërti' },
   'rmd.studies':     { mk: '📚 Учи дома',                en: '📚 Studies at home',         sq: '📚 Studion në shtëpi' },
+  'rmd.smoker':      { mk: '🚬 Пушач',                   en: '🚬 Smoker',                  sq: '🚬 Duhanpirës' },
+  'rmd.pet':         { mk: '🐾 Сака миленици',           en: '🐾 Pet friendly',            sq: '🐾 Pranon kafshë' },
+  'rmd.noHabits':    { mk: 'Нема избрано навики',        en: 'No habits selected',         sq: 'Asnjë zakon i zgjedhur' },
   'rmd.about':       { mk: 'За мене',                    en: 'About',                      sq: 'Rreth' },
   'rmd.noBioFull':   { mk: 'Сè уште нема биографија.',   en: 'No bio provided yet.',       sq: 'Ende pa biografi.' },
 

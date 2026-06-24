@@ -43,7 +43,7 @@ export class RoommatesListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (data) => {
-          this.roommates = data ?? [];
+          this.roommates = (data ?? []).map((p) => this.normalize(p));
           this.filtered = [...this.roommates];
           this.loading = false;
         },
@@ -82,5 +82,15 @@ export class RoommatesListComponent implements OnInit, OnDestroy {
     this.filterLifestyle = '';
     this.filterMaxBudget = undefined;
     this.filtered = [...this.roommates];
+  }
+
+  /** Map backend field names to the legacy aliases the card template reads. */
+  private normalize(p: Profile): Profile {
+    return {
+      ...p,
+      budgetMin: p.budgetMin ?? p.minBudget,
+      budgetMax: p.budgetMax ?? p.maxBudget,
+      housingType: p.housingType ?? (p.accommodationType as any)
+    };
   }
 }

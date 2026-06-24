@@ -62,9 +62,11 @@
       <section class="section">
         <h3>{{ 'rmd.habits' | t }}</h3>
         <div class="chips">
-          <span class="chip" [class.on]="profile.earlyRiser">{{ 'rmd.early' | t }}</span>
-          <span class="chip" [class.on]="profile.cleanliness">{{ 'rmd.clean' | t }}</span>
-          <span class="chip" [class.on]="profile.studyAtHome">{{ 'rmd.studies' | t }}</span>
+          @for (h of habits; track h) {
+            <span class="chip on">{{ h | t }}</span>
+          } @empty {
+            <span class="muted">{{ 'rmd.noHabits' | t }}</span>
+          }
         </div>
       </section>
 

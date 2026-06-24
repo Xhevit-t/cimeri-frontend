@@ -82,6 +82,19 @@ export class ProfileViewComponent implements OnInit, OnDestroy {
     return `${user.firstName?.charAt(0) || ''}${user.lastName?.charAt(0) || ''}`.toUpperCase();
   }
 
+  /** Translation keys for only the habits the user actually selected. */
+  get habits(): string[] {
+    const p = this.profile as any;
+    if (!p) return [];
+    const out: string[] = [];
+    if (p.earlyRiser) out.push('rmd.early');
+    if (p.clean ?? p.cleanliness) out.push('rmd.clean');
+    if (p.studiesAtHome ?? p.studyAtHome) out.push('rmd.studies');
+    if (p.smoker) out.push('rmd.smoker');
+    if (p.petFriendly) out.push('rmd.pet');
+    return out;
+  }
+
   /** Normalize backend field names to legacy aliases used by the template */
   private normalize(p: Profile): Profile {
     return {
@@ -93,6 +106,8 @@ export class ProfileViewComponent implements OnInit, OnDestroy {
       cleanliness: p.cleanliness ?? p.clean,
       studyAtHome: p.studyAtHome ?? p.studiesAtHome,
       movingDate: p.movingDate ?? p.moveInDate,
+      // "Looking" status reflects whether the user opted into recommendations
+      isLooking: p.isLooking ?? p.visibleInRecommendations ?? p.publicProfile,
       // Ensure required field is always present
       city: p.city ?? ''
     };
