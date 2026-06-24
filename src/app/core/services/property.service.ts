@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { ApiService } from './api.service';
-import { Property, PropertyCreateRequest, PropertyFilter } from '../../shared/models/property.model';
+import { Property, PropertyCreateRequest, PropertyFilter, PropertyType } from '../../shared/models/property.model';
 import { PagedResponse } from '../../shared/models/user.model';
 
 export type { PropertyFilter };
@@ -91,50 +91,59 @@ export class PropertyService {
   }
 
   /**
-   * Maps legacy PropertyCreateRequest fields (price, type, rooms, bathrooms, wifi,
-   * petFriendly) to the backend's shape (monthlyPrice, accommodationType, etc.).
+   * Builds a clean backend payload from a mix of legacy and backend field names.
+   *
+   * Critically, this strips legacy-only keys (price, type, rooms, bathrooms, wifi,
+   * petFriendly) and guarantees `accommodationType` is one of the backend enum
+   * values. The backend returns HTTP 500 (not 400) for an unknown enum value, so
+   * a stray 'HOUSE'/'ROOM' leaking through would surface to the user as
+   * "Server error — please try again later". Only fields that are actually present
+   * are included, so partial updates stay partial.
    */
   private mapLegacyFields(data: Partial<PropertyCreateRequest>): Partial<PropertyCreateRequest> {
-    const mapped: any = { ...data };
+    const src = data as any;
+    const out: any = {};
 
-    // Map legacy price → monthlyPrice
-    if (!mapped.monthlyPrice && mapped.price !== undefined) {
-      mapped.monthlyPrice = mapped.price;
+    // Already-correct backend fields — pass through when present.
+    for (const key of ['title', 'description', 'city', 'address', 'furnished', 'parking', 'availableFrom', 'imageUrls']) {
+      if (src[key] !== undefined) out[key] = src[key];
     }
 
-    // Map legacy type → accommodationType (only if it's a valid backend value)
-    if (!mapped.accommodationType && mapped.type) {
-      // 'HOUSE' and 'ROOM' have no backend equivalent — use APARTMENT as fallback
-      const typeMap: Record<string, string> = {
+    // monthlyPrice ← monthlyPrice | legacy price
+    const price = src.monthlyPrice ?? src.price;
+    if (price !== undefined) out.monthlyPrice = price;
+
+    // accommodationType ← accommodationType | legacy type, coerced to a valid enum.
+    // 'HOUSE' and 'ROOM' have no backend equivalent — map them; anything else
+    // unknown falls back to APARTMENT so we never POST an invalid enum (→ 500).
+    const rawType = src.accommodationType ?? src.type;
+    if (rawType !== undefined) {
+      const typeMap: Record<string, PropertyType> = {
         APARTMENT: 'APARTMENT',
         STUDIO: 'STUDIO',
         PRIVATE_ROOM: 'PRIVATE_ROOM',
         HOUSE: 'APARTMENT',
         ROOM: 'PRIVATE_ROOM'
       };
-      mapped.accommodationType = typeMap[mapped.type] ?? 'APARTMENT';
+      out.accommodationType = typeMap[rawType] ?? 'APARTMENT';
     }
 
-    // Map legacy rooms → numberOfRooms
-    if (!mapped.numberOfRooms && mapped.rooms !== undefined) {
-      mapped.numberOfRooms = mapped.rooms;
-    }
+    // numberOfRooms ← numberOfRooms | legacy rooms
+    const rooms = src.numberOfRooms ?? src.rooms;
+    if (rooms !== undefined) out.numberOfRooms = rooms;
 
-    // Map legacy bathrooms → numberOfBathrooms
-    if (!mapped.numberOfBathrooms && mapped.bathrooms !== undefined) {
-      mapped.numberOfBathrooms = mapped.bathrooms;
-    }
+    // numberOfBathrooms ← numberOfBathrooms | legacy bathrooms
+    const bathrooms = src.numberOfBathrooms ?? src.bathrooms;
+    if (bathrooms !== undefined) out.numberOfBathrooms = bathrooms;
 
-    // Map legacy wifi → internet
-    if (!mapped.internet && mapped.wifi !== undefined) {
-      mapped.internet = mapped.wifi;
-    }
+    // internet ← internet | legacy wifi
+    const internet = src.internet ?? src.wifi;
+    if (internet !== undefined) out.internet = internet;
 
-    // Map legacy petFriendly → petsAllowed
-    if (!mapped.petsAllowed && mapped.petFriendly !== undefined) {
-      mapped.petsAllowed = mapped.petFriendly;
-    }
+    // petsAllowed ← petsAllowed | legacy petFriendly
+    const petsAllowed = src.petsAllowed ?? src.petFriendly;
+    if (petsAllowed !== undefined) out.petsAllowed = petsAllowed;
 
-    return mapped;
+    return out;
   }
 }

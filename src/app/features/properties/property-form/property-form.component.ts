@@ -25,7 +25,9 @@ export class PropertyFormComponent implements OnInit {
   errorMessage = '';
 
   cities = ['Skopje', 'Bitola', 'Tetovo', 'Kumanovo', 'Prilep', 'Ohrid', 'Stip', 'Veles'];
-  types = ['APARTMENT', 'HOUSE', 'STUDIO', 'ROOM'];
+  // Backend accommodation enum — 'HOUSE'/'ROOM' don't exist server-side and
+  // would be silently coerced, so only the real values are offered here.
+  types = ['APARTMENT', 'PRIVATE_ROOM', 'STUDIO'];
 
   form = this.fb.nonNullable.group({
     title: ['', [Validators.required, Validators.minLength(5)]],
@@ -50,19 +52,22 @@ export class PropertyFormComponent implements OnInit {
     this.loading = true;
     this.propertySvc.getProperty(Number(this.id)).subscribe({
       next: (p) => {
+        // The backend returns monthlyPrice/accommodationType/numberOfRooms/etc.;
+        // fall back to those so editing pre-fills correctly (?? mirrors
+        // PropertyDetailComponent.normalize).
         this.form.patchValue({
           title: p.title,
           description: p.description,
           city: p.city,
           address: p.address,
-          price: p.price,
-          type: p.type,
-          rooms: p.rooms,
-          bathrooms: p.bathrooms,
+          price: p.price ?? p.monthlyPrice,
+          type: p.type ?? p.accommodationType,
+          rooms: p.rooms ?? p.numberOfRooms,
+          bathrooms: p.bathrooms ?? p.numberOfBathrooms,
           furnished: p.furnished,
-          wifi: p.wifi,
+          wifi: p.wifi ?? p.internet,
           parking: p.parking,
-          petFriendly: p.petFriendly,
+          petFriendly: p.petFriendly ?? p.petsAllowed,
           availableFrom: p.availableFrom
         });
         this.loading = false;
