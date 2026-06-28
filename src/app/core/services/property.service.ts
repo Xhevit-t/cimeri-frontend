@@ -29,25 +29,28 @@ export class PropertyService {
    */
   getProperties(filter: PropertyFilter = {}): Observable<Property[]> {
     return this.api.getProperties(filter).pipe(
-      map((res) => (Array.isArray(res) ? res : (res as PagedResponse<Property>).content ?? []))
+      map((res) => (Array.isArray(res) ? res : (res as PagedResponse<Property>).content ?? [])),
+      map((list) => list.map((p) => this.normalize(p)))
     );
   }
 
   /** GET /properties — returns paged response */
   getPropertiesPaged(filter: PropertyFilter = {}): Observable<PagedResponse<Property>> {
-    return this.api.getProperties(filter);
+    return this.api.getProperties(filter).pipe(
+      map((res) => ({ ...res, content: (res.content ?? []).map((p) => this.normalize(p)) }))
+    );
   }
 
   /**
    * Legacy method: getProperty(id) used by PropertyDetailComponent and PropertyFormComponent.
    */
   getProperty(id: number): Observable<Property> {
-    return this.api.getPropertyById(id);
+    return this.api.getPropertyById(id).pipe(map((p) => this.normalize(p)));
   }
 
   /** GET /properties/{id} */
   getPropertyById(id: number): Observable<Property> {
-    return this.api.getPropertyById(id);
+    return this.api.getPropertyById(id).pipe(map((p) => this.normalize(p)));
   }
 
   /**
@@ -82,12 +85,12 @@ export class PropertyService {
    * when you have the user id available.
    */
   getMyProperties(ownerId: number): Observable<Property[]> {
-    return this.api.getPropertiesByOwner(ownerId);
+    return this.api.getPropertiesByOwner(ownerId).pipe(map((list) => list.map((p) => this.normalize(p))));
   }
 
   /** GET /properties/owner/{ownerId} */
   getPropertiesByOwner(ownerId: number): Observable<Property[]> {
-    return this.api.getPropertiesByOwner(ownerId);
+    return this.api.getPropertiesByOwner(ownerId).pipe(map((list) => list.map((p) => this.normalize(p))));
   }
 
   /**
@@ -100,6 +103,31 @@ export class PropertyService {
    * "Server error — please try again later". Only fields that are actually present
    * are included, so partial updates stay partial.
    */
+  /**
+   * Read-direction counterpart of mapLegacyFields. The backend returns the
+   * canonical names (monthlyPrice, accommodationType, numberOfRooms, …) but the
+   * card/detail templates still bind to the legacy aliases (price, type, rooms,
+   * bathrooms, wifi, petFriendly). Without this, the price renders as a bare
+   * "$/месечно" with no number and the rooms/bath/chip values are blank. We
+   * populate the legacy aliases from the canonical fields (falling back to any
+   * alias the backend might already send) so templates render correctly.
+   */
+  private normalize(p: Property): Property {
+    if (!p) return p;
+    const out = p as any;
+    out.price = out.monthlyPrice ?? out.price;
+    out.type = out.accommodationType ?? out.type;
+    out.rooms = out.numberOfRooms ?? out.rooms;
+    out.bathrooms = out.numberOfBathrooms ?? out.bathrooms;
+    out.wifi = out.internet ?? out.wifi;
+    out.petFriendly = out.petsAllowed ?? out.petFriendly;
+    out.isActive = out.active ?? out.isActive;
+    if ((out.imageUrl === undefined || out.imageUrl === null) && Array.isArray(out.imageUrls) && out.imageUrls.length > 0) {
+      out.imageUrl = out.imageUrls[0];
+    }
+    return out as Property;
+  }
+
   private mapLegacyFields(data: Partial<PropertyCreateRequest>): Partial<PropertyCreateRequest> {
     const src = data as any;
     const out: any = {};
